@@ -487,6 +487,31 @@ module CLI
       return ret
     end
   end
+
+	def progressive_string(text, progress, width, opt={})
+		width = width.to_i
+		raise "width #{width} should > 0" unless width > 0
+		score_width = (width*progress.to_f).to_i
+		score_width = [width, score_width].min
+		text = text.ljust(score_width, ' ')
+		text_1 = text[0..(score_width-1)]
+		text_1 = '' if score_width == 0
+		text_2 = (text[score_width..-1] || '').ljust(width-score_width, '░')
+		if opt[:color].nil? # Adaptive color
+			if score_width.to_f/width < 0.50
+				text = text_1.light_white.on_green + text_2.green
+			elsif score_width.to_f/width < 0.75
+				text = text_1.light_white.on_yellow + text_2.yellow
+			else
+				text = text_1.light_white.on_red + text_2.red
+			end
+		else
+			color = opt[:color].to_sym
+			on_color = "on_#{opt[:color]}".to_sym
+			text = text_1.light_white.send(on_color) + text_2.send(color)
+		end
+		return text
+	end
 end
 
 module ExecUtil
