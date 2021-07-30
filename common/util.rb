@@ -489,6 +489,9 @@ module CLI
   end
 
 	def progressive_string(text, progress, width, opt={})
+		text = text.uncolorize
+		progress = 1 if progress > 1
+		progress = 0 if progress < 0
 		width = width.to_i
 		raise "width #{width} should > 0" unless width > 0
 		score_width = (width*progress.to_f).to_i
