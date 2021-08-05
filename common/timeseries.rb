@@ -125,25 +125,48 @@ class CandleBars
     @latest_candle = {}
 		@latest_bucket_id = nil
     @latest_tick_ms = 0
+    @_default_lambda = lambda { |candle, last_candle, data|
+      if data.nil?  # Init candle from last_candle
+        candle[:open] = candle[:high] = candle[:low] = candle[:close] = last_candle[:close]
+        candle[:vol] = 0
+      else # Update candle from tick data: { 'p'=>, 's'=> }
+        last = candle[:close] = data['p']
+        candle[:open] ||= last
+        candle[:high] ||= last
+        candle[:low] ||= last
+        candle[:vol] ||= 0
+        candle[:high] = last if last > candle[:high]
+        candle[:low] = last if last < candle[:low]
+        candle[:vol] += data['s']
+      end
+    }
     if block_given?
       @stat_lambda = stat_lambda
     else
-      @stat_lambda = lambda { |candle, last_candle, data|
-        if data.nil?  # Init candle from last_candle
-          candle[:open] = candle[:high] = candle[:low] = candle[:close] = last_candle[:close]
-          candle[:vol] = 0
-        else # Update candle from tick data: { 'p'=>, 's'=> }
-          last = candle[:close] = data['p']
-          candle[:open] ||= last
-          candle[:high] ||= last
-          candle[:low] ||= last
-          candle[:vol] ||= 0
-          candle[:high] = last if last > candle[:high]
-          candle[:low] = last if last < candle[:low]
-          candle[:vol] += data['s']
-        end
-      }
+      @stat_lambda = @_default_lambda
     end
+  end
+
+  def to_json(args={}) # Compatiable with JSON lib
+    [
+      @time_unit_ms,
+      @history,
+      @max_candles,
+      @current_candles,
+      @latest_candle,
+      @latest_bucket_id,
+      @latest_tick_ms
+    ].to_json
+  end
+
+  def restore_from_json(j)
+    @time_unit_ms, @history, @max_candles, @current_candles, @latest_candle, @latest_bucket_id, @latest_tick_ms = j
+    @latest_candle.keys.each { |k|
+      @latest_candle[k.to_sym] = @latest_candle.delete(k)
+    }
+    @history.each { |h|
+      h.keys.each { |k| h[k.to_sym] = h.delete(k) }
+    }
   end
 
 	def append(t, data) # t in ms, discard non-latest data
