@@ -94,10 +94,95 @@ class TimeSeriesBucket
 		all
 	end
 
-	def print # Debug
+	def print
 		@buckets.reverse.each_with_index do |bkt, i|
 			puts "Bucket ID #{@latest_bucket_id - i}"
 			bkt.each { |data| puts "\t\t\tdata: #{data}" }
 		end
 	end
+end
+
+class CandleBars
+  class << self
+    def merge_candles(candles)
+      return {} if candles.empty?
+      candles = candles.sort_by { |c| c[:ms] }.reverse # From latest to old.
+      {
+        :open => candles.last[:open],
+        :close=> candles.first[:close],
+        :high => candles.map { |c| c[:high] }.max,
+        :low  => candles.map { |c| c[:low] }.min,
+        :vol  => candles.map { |c| c[:vol] }.sum,
+        :ms   => candles.last[:ms]
+      }
+    end
+  end
+	def initialize(time_unit_m, max_candles, &stat_lambda) # Time unit in minute
+    @time_unit_ms = time_unit_m * 60_000
+    @history = [] # From latest to oldest, does NOT include the current candle.
+    @max_candles = max_candles
+    @current_candles = 0
+    @latest_candle = {}
+		@latest_bucket_id = nil
+    @latest_tick_ms = 0
+    if block_given?
+      @stat_lambda = stat_lambda
+    else
+      @stat_lambda = lambda { |candle, last_candle, data|
+        if data.nil?  # Init candle from last_candle
+          candle[:open] = candle[:high] = candle[:low] = candle[:close] = last_candle[:close]
+          candle[:vol] = 0
+        else # Update candle from tick data: { 'p'=>, 's'=> }
+          last = candle[:close] = data['p']
+          candle[:open] ||= last
+          candle[:high] ||= last
+          candle[:low] ||= last
+          candle[:vol] ||= 0
+          candle[:high] = last if last > candle[:high]
+          candle[:low] = last if last < candle[:low]
+          candle[:vol] += data['s']
+        end
+      }
+    end
+  end
+
+	def append(t, data) # t in ms, discard non-latest data
+    return if @latest_tick_ms > t # Could not distinct same trades here.
+    # puts "APPEND #{data}"
+    @latest_tick_ms = t
+		id = t.to_i / @time_unit_ms
+    @latest_bucket_id ||= id
+		if id == @latest_bucket_id
+      @stat_lambda.call(@latest_candle, nil, data) # Modify latest_candle only.
+    else
+      gap = id - @latest_bucket_id
+      last_candle = @latest_candle
+      #  puts "INSERT #{gap} candles"
+      gap.times { @history.unshift(last_candle) } # Clone candle for missing timerange, put at first
+      @current_candles += gap
+      @history = @history[0..(@max_candles-1)] if @current_candles > @max_candles
+      @latest_bucket_id = id
+
+      @latest_candle = {}
+      @stat_lambda.call(@latest_candle, last_candle, nil) # Init latest_candle
+    end
+    @latest_candle[:ms] = id * @time_unit_ms
+  end
+
+  # Trades: [{ 't'=>, 'p'=>, 's'=> }...]
+  def on_trades(trades)
+    return if trades.empty?
+    trades.each { |t|
+      time = t['t'].to_i
+      # Discard when trades time equals last tick ms. Update at last to record all trades at same time.
+      next if @latest_tick_ms >= time
+      append(time, t)
+    }
+    @latest_tick_ms = [@latest_tick_ms, trades.map { |t| t['t'].to_i }.max].max
+  end
+
+  def latest(n=1)
+    return @latest_candle if n <= 1
+    return [@latest_candle] + @history[0..(n-1)]
+  end
 end
