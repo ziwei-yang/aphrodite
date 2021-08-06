@@ -106,6 +106,7 @@ class CandleBars
   class << self
     def merge_candles(candles)
       return {} if candles.empty?
+      return candles[0] if candles.size == 1
       candles = candles.sort_by { |c| c[:ms] }.reverse # From latest to old.
       {
         :open => candles.last[:open],
