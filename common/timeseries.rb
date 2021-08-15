@@ -106,6 +106,7 @@ class CandleBars
   class << self
     def merge_candles(candles)
       return {} if candles.empty?
+      return candles[0] if candles.size == 1
       candles = candles.sort_by { |c| c[:ms] }.reverse # From latest to old.
       {
         :open => candles.last[:open],
@@ -147,7 +148,7 @@ class CandleBars
     end
   end
 
-  def to_json(args={}) # Compatiable with JSON lib
+  def to_json(state={}) # Compatiable with JSON lib
     [
       @time_unit_ms,
       @history,
@@ -156,7 +157,7 @@ class CandleBars
       @latest_candle,
       @latest_bucket_id,
       @latest_tick_ms
-    ].to_json
+    ].to_json(state)
   end
 
   def restore_from_json(j)
