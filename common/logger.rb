@@ -115,6 +115,7 @@ class Logger
 					end
 				}
 			}
+			print "Logger: @@_apd_logger_file_w_thread is running\n"
 			@@_apd_logger_file_w_thread.priority = -3
 		end
 	
@@ -129,7 +130,7 @@ class Logger
 		# This does not work in Parallel.each(in_processes)
 		# Should set to sync mode to make it work.
 		def log_int_async(o, additional_stack=0, opt={})
-			if @@_apd_logger_file_w_thread.status == false || @@_apd_logger_file_w_thread.status == nil
+			if @@_apd_logger_file.nil?
 				self.singleton_class.class_eval { alias_method :log_int, :log_int_sync }
 				return log_int_sync(o, additional_stack, opt)
 			end
