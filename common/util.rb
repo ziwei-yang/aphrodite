@@ -499,7 +499,7 @@ module CLI
 		text = text.ljust(score_width, ' ')
 		text_1 = text[0..(score_width-1)]
 		text_1 = '' if score_width == 0
-		text_2 = (text[score_width..-1] || '').ljust(width-score_width).gsub('  ', '░░')
+		text_2 = (text[score_width..-1] || '').ljust(width-score_width).gsub('  ', '░░').gsub(/\s$/, '░')
 		if opt[:color].nil? # Adaptive color
 			if score_width.to_f/width < 0.50
 				text = text_1.light_white.on_green + text_2.green
@@ -522,7 +522,7 @@ module ExecUtil
 		log_prefix = opt[:log_prefix] || ''
 		use_thread = opt[:thread] == true
 		verbose = opt[:verbose] == true
-		quiet = opt[:quiet] == true
+		quiet = (opt[:quiet] == true || opt[:silent] == true)
 		verbose = false if quiet
 		status = opt[:status] || {}
 		status['output'] ||= []
