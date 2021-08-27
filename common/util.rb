@@ -472,6 +472,8 @@ module CLI
     puts(opt[:prompt].white.on_black, level:2) unless opt[:prompt].nil?
     timeout = opt[:timeout]
     if timeout.nil?
+      r = STDIN.gets
+			return nil if r.nil?
       return STDIN.gets.chomp
     elsif timeout == 0
       return 'Y'
