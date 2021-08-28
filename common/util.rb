@@ -474,7 +474,7 @@ module CLI
     if timeout.nil?
       r = STDIN.gets
 			return nil if r.nil?
-      return STDIN.gets.chomp
+      return r.chomp
     elsif timeout == 0
       return 'Y'
     else
