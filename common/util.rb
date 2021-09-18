@@ -89,8 +89,8 @@ module ExpireResult
 						instance_variable_set(t_key, {}) if instance_variable_get(t_key).nil?
 						last_time = instance_variable_get(t_key)[args_key]
 						last_result = instance_variable_get(r_key)[args_key]
-						now = DateTime.now
-						if last_time != nil && now - last_time < expire_t/(24.0*3600.0)
+						now = Time.now.to_i
+						if last_time != nil && now - last_time < expire_t
 							return last_result
 						end
 						ret = nil
@@ -101,7 +101,7 @@ module ExpireResult
 							return last_result
 						end
 						instance_variable_get(r_key)[args_key] = ret
-						instance_variable_get(t_key)[args_key] = DateTime.now
+						instance_variable_get(t_key)[args_key] = Time.now.to_i
 						# puts "Cache #{method} result for #{args_key} in #{expire_t} seconds."
 						return ret
 					end
@@ -498,24 +498,36 @@ module CLI
 		raise "width #{width} should > 0" unless width > 0
 		score_width = (width*progress.to_f).to_i
 		score_width = [width, score_width].min
-		text = text.ljust(score_width, ' ')
-		text_1 = text[0..(score_width-1)]
-		text_1 = '' if score_width == 0
-		text_2 = (text[score_width..-1] || '').ljust(width-score_width).gsub('  ', '░░').gsub(/\s$/, '░')
+		if opt[:side] != 'right'
+			# text = 0123456, progress = 0.4, width = 10
+			# text1 = 0123, text2 = '456----'
+			text_1 = '' if score_width == 0
+			text_1 = text.ljust(width)[0..(score_width-1)] if score_width > 0
+			text_2 = text.ljust(width)[score_width..-1]
+		else
+			# text = 0123456, progress = 0.4, width = 10
+			# text1 = 3456, text2 = '----012'
+			text_1 = '' if score_width == 0
+			text_1 = text.rjust(width)[-score_width..-1] if score_width > 0
+			text_2 = text.rjust(width)[0..(width-score_width-1)]
+			text_2 = '' if score_width >= width
+		end
+		text_2 = text_2.gsub('  ', '░░').gsub(/\s$/, '░').gsub(/░\s/, '░░').gsub(/\s░/, '░░')
 		if opt[:color].nil? # Adaptive color
 			if score_width.to_f/width < 0.50
-				text = text_1.light_white.on_green + text_2.green
+				text = [text_1.light_white.on_green, text_2.green]
 			elsif score_width.to_f/width < 0.75
-				text = text_1.light_white.on_yellow + text_2.yellow
+				text = [text_1.light_white.on_yellow, text_2.yellow]
 			else
-				text = text_1.light_white.on_red + text_2.red
+				text = [text_1.light_white.on_red, text_2.red]
 			end
 		else
 			color = opt[:color].to_sym
 			on_color = "on_#{opt[:color]}".to_sym
-			text = text_1.light_white.send(on_color) + text_2.send(color)
+			text = [text_1.light_white.send(on_color), text_2.send(color)]
 		end
-		return text
+		text = text.reverse if opt[:side] == 'right'
+		return text.join
 	end
 end
 
