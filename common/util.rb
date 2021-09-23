@@ -523,8 +523,12 @@ module CLI
 			end
 		else
 			color = opt[:color].to_sym
-			on_color = "on_#{opt[:color]}".to_sym
-			text = [text_1.light_white.send(on_color), text_2.send(color)]
+			if color == :default || color == :uncolorize
+				text = [text_1, text_2]
+			else
+				on_color = "on_#{opt[:color]}".to_sym
+				text = [text_1.light_white.send(on_color), text_2.send(color)]
+			end
 		end
 		text = text.reverse if opt[:side] == 'right'
 		return text.join
