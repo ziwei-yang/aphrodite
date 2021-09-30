@@ -462,10 +462,10 @@ module CLI
   def terminal_width
     # IO.console.winsize
     # io-console does not support JRuby
-    GLI::Terminal.new.size[0]
+    GLI::Terminal.new.size[0] || 80
   end
   def terminal_height
-    GLI::Terminal.new.size[1]
+    GLI::Terminal.new.size[1] || 24
   end
 
   def get_input(opt={})
