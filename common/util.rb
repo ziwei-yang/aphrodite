@@ -533,6 +533,34 @@ module CLI
 		text = text.reverse if opt[:side] == 'right'
 		return text.join
 	end
+
+	def _inverse_string_color(s)
+		"\033[03m"+s+"\033[0m"
+	end
+
+	# Given array [0.1, 0.2, -0.1, 0.3 ...] returns chart str with ▁▃▄▅▆▇█
+	def chart_string(array, opt={})
+		scale_chars = ' ▁▃▄▅▆▇█' # 0 <-> 1
+		scale_chars_neg = '█▇▆▅▄▃▁ ' # 0 <-> -1
+		step = 1.0/(scale_chars.size-1)
+		array.map { |a|
+			if a == 0
+				next scale_chars[0]
+			elsif a >= 2
+				next scale_chars[-1].green.on_light_green
+			elsif a >= 1
+				next scale_chars[((a-1)/step).ceil].green.on_light_green
+			elsif a > 0
+				next scale_chars[(a/step).ceil].light_green
+			elsif a <= -2
+				next scale_chars_neg[-1].light_red.on_red
+			elsif a <= -1
+				next scale_chars[((a.abs-1)/step).ceil].red.on_light_red
+			elsif a < 0
+				next _inverse_string_color(scale_chars[(a.abs/step).ceil].light_red)
+			end
+		}.join
+	end
 end
 
 module ExecUtil
