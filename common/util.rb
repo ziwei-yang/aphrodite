@@ -547,11 +547,11 @@ module CLI
 			if a == 0
 				next scale_chars[0]
 			elsif a >= 2
-				next scale_chars[-1].green.on_light_green
+				next scale_chars[-1].cyan.on_green
 			elsif a >= 1
-				next scale_chars[((a-1)/step).ceil].green.on_light_green
+				next scale_chars[((a-1)/step).ceil].cyan.on_green
 			elsif a > 0
-				next scale_chars[(a/step).ceil].light_green
+				next scale_chars[(a/step).ceil].green
 			elsif a <= -2
 				next scale_chars_neg[-1].light_red.on_red
 			elsif a <= -1
