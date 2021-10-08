@@ -277,6 +277,7 @@ end
 
 module SleepUtil
 	def graphic_sleep(time)
+		start_t = Time.now.to_f
 		maxSleepCount = time
 		sleepCount = 0
 		statusBarLength = 70
@@ -288,7 +289,7 @@ module SleepUtil
 			statusStr = "|#{'=' * elapsedLength}>#{'.' * remainedLength}"
 			print "\rSleep #{(maxSleepCount - sleepCount).to_i.to_s.ljust(10)}#{statusStr}"
 			sleep step
-			sleepCount += step
+			sleepCount = (Time.now.to_f - start_t).round
 		end
 		print "\r#{' '.ljust('Sleep '.length + 10 + statusBarLength + 2)}\r"
 	end
