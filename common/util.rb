@@ -280,7 +280,7 @@ module SleepUtil
 		start_t = Time.now.to_f
 		maxSleepCount = time
 		sleepCount = 0
-		statusBarLength = 70
+		statusBarLength = 30
 		step = 1
 		step = 0.1 if time < 60
 		while sleepCount < maxSleepCount
