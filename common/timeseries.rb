@@ -162,11 +162,12 @@ class CandleBars
 
   def restore_from_json(j)
     @time_unit_ms, @history, @max_candles, @current_candles, @latest_candle, @latest_bucket_id, @latest_tick_ms = j
+		# Some tiny fraction number might be stored as string "0.1123e3" in json
     @latest_candle.keys.each { |k|
-      @latest_candle[k.to_sym] = @latest_candle.delete(k)
+			@latest_candle[k.to_sym] = @latest_candle.delete(k).to_f
     }
     @history.each { |h|
-      h.keys.each { |k| h[k.to_sym] = h.delete(k) }
+			h.keys.each { |k| h[k.to_sym] = h.delete(k).to_f }
     }
   end
 

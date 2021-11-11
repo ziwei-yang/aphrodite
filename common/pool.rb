@@ -36,7 +36,7 @@ class GreedyConnectionPool
 		t = Time.now.to_f
 		conn = @_conn_create_block.call
 		t = (Time.now.to_f - t)*1000
-		puts [@name, "Create new conn", t.round(4).to_s.ljust(8), 'ms', status]
+		puts [@name, "Create new conn", t.round(4).to_s.ljust(8), 'ms', status].join(' ')
 		conn
 	end
 
@@ -115,7 +115,7 @@ class GreedyRedisPool < GreedyConnectionPool
 	def initialize(keep_avail_size, opt={})
 		redis_db = opt[:redis_db] || raise("redis_db should be specified in opt")
 		super('redis', keep_avail_size, opt) { 
-			puts "New redis client"
+			# puts "New redis client"
 			Redis.new :host => REDIS_HOST, port:REDIS_PORT, db:redis_db, password:REDIS_PSWD, timeout:20.0, connect_timeout:20.0, reconnect_attempts:10
 		}
 	end
