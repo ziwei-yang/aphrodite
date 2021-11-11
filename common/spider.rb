@@ -248,6 +248,7 @@ module SpiderUtil
 		verbose = (opt[:verbose] != false)
 		options = Selenium::WebDriver::Firefox::Options.new
 		options.headless! unless opt[:headless] == false # Default: headless
+		options.set_preference('general.useragent.override', opt[:agent]) if opt[:agent].is_a?(String)
 		Logger.highlight "width and height options omit" if opt[:width] != nil || opt[:height] != nil
 # 		width = opt[:width] || 1400
 # 		height = opt[:height] || 900
