@@ -547,17 +547,17 @@ module CLI
 		array.map { |a|
 			if a == 0
 				next scale_chars[0]
-			elsif a >= 2
+			elsif a >= 4 # >= 400%
 				next scale_chars[-1].cyan.on_green
-			elsif a >= 1
-				next scale_chars[((a-1)/step).ceil].cyan.on_green
-			elsif a > 0
+			elsif a >= 1 # 100%~400%
+				next scale_chars[((a-1)/step/3).ceil].cyan.on_green
+			elsif a > 0 # 0%~100%
 				next scale_chars[(a/step).ceil].green
-			elsif a <= -2
-				next scale_chars_neg[-1].light_red.on_red
-			elsif a <= -1
-				next scale_chars[((a.abs-1)/step).ceil].red.on_light_red
-			elsif a < 0
+			elsif a <= -4 # <= -400%
+				next scale_chars_neg[-1].light_red.on_magenta
+			elsif a <= -1 # -100~-400%
+				next scale_chars[((a.abs-1)/step/3).ceil].magenta.on_light_red
+			elsif a < 0 # 0~-100%
 				next _inverse_string_color(scale_chars[(a.abs/step).ceil].light_red)
 			end
 		}.join
