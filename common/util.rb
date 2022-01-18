@@ -562,6 +562,17 @@ module CLI
 			end
 		}.join
 	end
+
+	def wait_indicators(wait_str_len=2)
+		wait_chars = '▁▃▄▅▆▇█'
+		wait_char_size = wait_chars.size
+		wait_str_list_forth = (0..(wait_str_len*wait_char_size-1)).map do |i|
+			pos = i / wait_char_size
+			wait_chars[i % wait_char_size].rjust(pos+1, wait_chars[-1]).ljust(wait_str_len)
+		end
+		# back and forth
+		return wait_str_list_forth + wait_str_list_forth.reverse.map { |s| s.reverse }
+	end
 end
 
 module ExecUtil
