@@ -9,7 +9,7 @@ gem 'ruby-progressbar'
 gem 'mail'
 gem 'mailgun-ruby'
 gem 'redlock'
-gem 'rmagick'
+# gem 'rmagick'
 
 # For twitter and connection pool
 # gem 'typhoeus'

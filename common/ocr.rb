@@ -1,5 +1,7 @@
+# require 'rmagick' when using this module
 module OCR
 	def ocr_png(png_fname, opt={})
+		require 'rmagick' unless Object.const_defined?('Magick')
 		verbose = (opt[:verbose] != false)
 		puts "OCR PNG #{png_fname}" if verbose
 		b64_str = nil
