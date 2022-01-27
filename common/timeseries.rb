@@ -166,6 +166,7 @@ class CandleBars
     @latest_candle.keys.each { |k|
 			@latest_candle[k.to_sym] = @latest_candle.delete(k).to_f
     }
+		@current_candles ||= @history.size
     @history.each { |h|
 			h.keys.each { |k| h[k.to_sym] = h.delete(k).to_f }
     }
