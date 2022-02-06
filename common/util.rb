@@ -539,7 +539,7 @@ module CLI
 		"\033[03m"+s+"\033[0m"
 	end
 
-	# Given array [0.1, 0.2, -0.1, 0.3 ...] returns chart str with ▁▃▄▅▆▇█
+	# Given array [0.1, 0.2, -0.1, 0.3 ...] returns chart str with ▁▃▄▅▆▇█ ASCII: _‗▄▒█
 	def chart_string(array, opt={})
 		scale_chars = ' ▁▃▄▅▆▇█' # 0 <-> 1
 		scale_chars_neg = '█▇▆▅▄▃▁ ' # 0 <-> -1
