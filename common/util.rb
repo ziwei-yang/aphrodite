@@ -564,7 +564,8 @@ module CLI
 	end
 
 	def wait_indicators(wait_str_len=2) # UTF8: '▁▃▄▅▆▇█' ASCII: ' ░▒▓█' '┐┤┘┴└├┌┬' '_‗▄═≡■▀█'
-		wait_chars = (wait_str_len > 1 ? ' ░▒▓█' : '┐┤┘┴└├┌┬')
+		return '┐┤┘┴└├┌┬' if wait_str_len == 1
+		wait_chars = ' ░▒▓█'
 		wait_char_size = wait_chars.size
 		wait_str_list_forth = (0..(wait_str_len*wait_char_size-1)).map do |i|
 			pos = i / wait_char_size
