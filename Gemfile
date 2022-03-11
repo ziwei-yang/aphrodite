@@ -39,7 +39,9 @@ elsif RUBY_ENGINE == 'truffleruby'
 	# Could not compile mysql2 on ubuntu 1804
 else
 	gem 'bunny', '>= 2.6.3'
-	if RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.5'
+  if RUBY_PLATFORM.include?('arm64-darwin')
+    # auto compiling failed on M1 CPU for mysql2
+	elsif RUBY_ENGINE == 'ruby' && RUBY_VERSION >= '2.5'
 		gem 'mysql2', '~>0.5'
 	else
 		# 0.4.x Does not work with BigDecimal
