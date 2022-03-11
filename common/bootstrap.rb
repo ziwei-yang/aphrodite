@@ -10,7 +10,7 @@ module APD
 	def self.require_try(lib)
 		begin
 			require lib
-		rescue
+		rescue LoadError
 			puts "Fail to load [#{lib}], skip."
 		end
 	end
