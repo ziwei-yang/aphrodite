@@ -43,8 +43,22 @@ class MailTask
 			end
 		end
 		begin
-			if ENV['APD_MAIL_MODE'] == 'gmail' # Force mode selection
-				puts "Sending email with gmail smtp"
+			if ENV['APD_MAIL_MODE'] == 'smtp' # Force mode selection smtp > gmail > linux
+				puts "Sending email with smtp #{ENV["SMTP_USER"]}"
+				raise "No SMTP_USER/PSWD/DOMAIN/HOST in ENV" if ENV['SMTP_USER'].nil? || ENV['SMTP_PSWD'].nil? || ENV['SMTP_DOMAIN'].nil? || ENV['SMTP_HOST'].nil?
+				mail.from ENV['SMTP_USER']
+				smtp_settings = [:smtp, {
+						:address => ENV["SMTP_HOST"],
+						:port => 587,
+						:domain => ENV['SMTP_DOMAIN'],
+						:user_name => ENV['SMTP_USER'],
+						:password => ENV['SMTP_PSWD'],
+						:authentication => 'plain',
+						:enable_starttls_auto => true
+					}]
+				mail.delivery_method *smtp_settings
+			elsif ENV['APD_MAIL_MODE'] == 'gmail' # Force mode selection
+				puts "Sending email with gmail smtp #{ENV["GMAIL_USER"]}"
 				raise "No GMAIL_USER & GMAIL_PSWD in ENV" if ENV['GMAIL_USER'].nil? || ENV['GMAIL_PSWD'].nil?
 				mail.from ENV['GMAIL_USER']
 				smtp_settings = [:smtp, {
@@ -159,6 +173,11 @@ if __FILE__ == $0
 		opts.on("-s", "--subject subject", "Email subject") do |v|
 			options[:subject] = v
 		end
+
+		# Use -h html_file instead
+# 		opts.on("-c", "--content content", "Email content") do |v|
+# 			options[:content] = v
+# 		end
 	
 		opts.on("-h", "--html html-file", "Email content in HTML file") do |n|
 			options[:html_file] = n
@@ -179,7 +198,7 @@ if __FILE__ == $0
 		MailTask.email_mailgun(
 			options[:recipients],
 			options[:subject],
-			nil,
+			options[:content],
 			nil,
 			html_file:options[:html_file],
 			file:options[:attachment],
@@ -189,7 +208,7 @@ if __FILE__ == $0
 		MailTask.email_plain(
 			options[:recipients],
 			options[:subject],
-			nil,
+			options[:content],
 			nil,
 			html_file:options[:html_file],
 			file:options[:attachment],
