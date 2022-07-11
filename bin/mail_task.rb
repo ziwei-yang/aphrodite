@@ -44,7 +44,9 @@ class MailTask
 		end
 		retry_ct = 0
 		begin
-			if ENV['APD_MAIL_MODE'] == 'smtp' # Force mode selection smtp > gmail
+			# If APD_MAIL_MODE is not set, guess.
+			if (ENV['APD_MAIL_MODE'] == 'smtp') || (ENV['APD_MAIL_MODE'].nil? && ENV['SMTP_USER'] != nil)
+				# Force mode selection smtp > gmail
 				puts "Sending email with smtp #{ENV["SMTP_USER"]}"
 				raise "No SMTP_USER/PSWD/DOMAIN/HOST in ENV" if ENV['SMTP_USER'].nil? || ENV['SMTP_PSWD'].nil? || ENV['SMTP_DOMAIN'].nil? || ENV['SMTP_HOST'].nil?
 				mail.from ENV['SMTP_USER']
@@ -58,7 +60,7 @@ class MailTask
 						:enable_starttls_auto => true
 					}]
 				mail.delivery_method *smtp_settings
-			elsif ENV['APD_MAIL_MODE'] == 'gmail' # Force mode selection
+			elsif (ENV['APD_MAIL_MODE'] == 'gmail') || (ENV['APD_MAIL_MODE'].nil? && ENV['GMAIL_USER'] != nil)
 				puts "Sending email with gmail smtp #{ENV["GMAIL_USER"]}"
 				raise "No GMAIL_USER & GMAIL_PSWD in ENV" if ENV['GMAIL_USER'].nil? || ENV['GMAIL_PSWD'].nil?
 				mail.from ENV['GMAIL_USER']
