@@ -42,8 +42,9 @@ class MailTask
 				end
 			end
 		end
+		retry_ct = 0
 		begin
-			if ENV['APD_MAIL_MODE'] == 'smtp' # Force mode selection smtp > gmail > linux
+			if ENV['APD_MAIL_MODE'] == 'smtp' # Force mode selection smtp > gmail
 				puts "Sending email with smtp #{ENV["SMTP_USER"]}"
 				raise "No SMTP_USER/PSWD/DOMAIN/HOST in ENV" if ENV['SMTP_USER'].nil? || ENV['SMTP_PSWD'].nil? || ENV['SMTP_DOMAIN'].nil? || ENV['SMTP_HOST'].nil?
 				mail.from ENV['SMTP_USER']
@@ -71,23 +72,17 @@ class MailTask
 						:enable_starttls_auto => true
 					}]
 				mail.delivery_method *smtp_settings
+			else
+				raise "No known APD_MAIL_MODE set in ENV"
 			end
 			mail.deliver!
-		rescue Errno::ECONNREFUSED
-			puts "Try sending email again with gmail smtp"
-			raise "No GMAIL_USER & GMAIL_PSWD in ENV" if ENV['GMAIL_USER'].nil? || ENV['GMAIL_PSWD'].nil?
-			mail.from ENV['GMAIL_USER']
-			smtp_settings = [:smtp, {
-					:address => "smtp.gmail.com",
-					:port => 587,
-					:domain => 'gmail.com',
-					:user_name => ENV['GMAIL_USER'],
-					:password => ENV['GMAIL_PSWD'],
-					:authentication => 'plain',
-					:enable_starttls_auto => true
-				}]
-			mail.delivery_method *smtp_settings
-			mail.deliver!
+		rescue Errno::ECONNREFUSED => e
+			if retry_ct < 1
+				puts "Try sending email again"
+				retry_ct += 1
+				retry
+			end
+			raise e
 		end
 	end
 
