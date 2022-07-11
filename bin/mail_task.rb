@@ -174,10 +174,9 @@ if __FILE__ == $0
 			options[:subject] = v
 		end
 
-		# Use -h html_file instead
-# 		opts.on("-c", "--content content", "Email content") do |v|
-# 			options[:content] = v
-# 		end
+		opts.on("-c", "--content content", "Email content") do |v|
+			options[:content] = v
+		end
 	
 		opts.on("-h", "--html html-file", "Email content in HTML file") do |n|
 			options[:html_file] = n
