@@ -148,8 +148,10 @@ class Logger
 		def log_int_sync(o, additional_stack=0, opt={})
 			additional_stack ||= 0
 			o = o.to_s
-			head = caller(2 + additional_stack).first.split(":in")[0]
-			head = head.split('/').last.gsub('.rb', '')
+      # For C extension code path, head could be NULL
+			head = caller(2 + additional_stack).first.split(":in")[0] || "NULL"
+			head = head.split('/').last || "NULL"
+      head = head.gsub('.rb', '')
 			head = ".#{head[-11..-1]}" if head.size >= 12
 			if opt[:time].nil?
 				head = "#{Time.now.strftime("%m/%d-%H:%M:%S.%4N")} #{head} "
