@@ -55,6 +55,7 @@ class MysqlDao
 					dbclient = Mysql2::Client.new host:@dbhost, port:@dbport, username:@dbuser, password:@dbpswd, database:@dbname, encoding:@dbencoding, reconnect:true, as: :array
 					break
 				else
+					Logger.highlight "Use mysql lib." if @verbose
 					dbclient = Mysql.init
 					dbclient.options Mysql::SET_CHARSET_NAME, @dbencoding
 					dbclient.real_connect @dbhost, @dbuser, @dbpswd, @dbname, @dbport

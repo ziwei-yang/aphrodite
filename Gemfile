@@ -1,14 +1,14 @@
-gem 'rest-client'
-gem 'ruby-mysql'
-gem 'redis'
-gem 'nokogiri'
-gem 'logger'
-gem 'colorize'
-gem 'execjs'
-gem 'ruby-progressbar'
-gem 'mail'
-gem 'mailgun-ruby'
-gem 'redlock'
+gem 'rest-client', "~> 2.1.0"
+gem 'ruby-mysql', "~> 2.9.14"
+gem 'redis', "~> 5.0.6"
+gem 'nokogiri', "~> 1.14.2"
+gem 'logger', "~> 1.4.3"
+gem 'colorize', "~> 0.8.1"
+gem 'execjs', "~> 2.7.0"
+gem 'ruby-progressbar', "~> 1.11.0"
+gem 'mail', "~> 2.7.1"
+gem 'mailgun-ruby', "~> 1.2.6"
+gem 'redlock', "~> 2.0.1"
 # gem 'rmagick'
 
 # For twitter and connection pool

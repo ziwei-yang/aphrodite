@@ -36,6 +36,35 @@ module EncodeUtil
 		tr("-", "_").
 		downcase
 	end
+
+	# 12345678.1234 -> '  12,345,678.1234  '
+	def to_comma_num(num, intg_len, frac_len, opt={})
+		return " "*(intg_len+frac_len+1) if num.nil?
+		pstv = (num >= 0)
+		num = num.abs
+
+		# frac_s = '' or '.1234'
+		frac = (num - num.to_i).round(frac_len)
+		frac_s = ''
+		frac_s = frac.to_s[1..-1] if frac != 0
+
+		num_s = num.to_i.to_s
+		num_comma = ''
+		(num_s.size / 3 + 1).times { |i|
+			if 3*i+3 > num_s.size
+				num_comma = num_s[0..(-3*i-1)] + ',' + num_comma
+				break
+			else
+				num_comma = num_s[(-3*i-3)..(-3*i-1)] + ',' + num_comma
+			end
+		}
+		num_comma = num_comma[0..-2] if num_comma[-1] == ','
+		num_comma = num_comma[1..-1] if num_comma[0] == ','
+		num_comma = '-' + num_comma if !pstv
+		num_comma = opt[:prefix] + num_comma if opt[:prefix] != nil
+
+		str = num_comma.rjust(intg_len) + frac_s.ljust(frac_len+1)
+	end
 end
 
 module LZString

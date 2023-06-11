@@ -57,6 +57,7 @@ class MailTask
 						:user_name => ENV['SMTP_USER'],
 						:password => ENV['SMTP_PSWD'],
 						:authentication => 'plain',
+						:openssl_verify_mode => OpenSSL::SSL::VERIFY_NONE,
 						:enable_starttls_auto => true
 					}]
 				mail.delivery_method *smtp_settings
@@ -71,6 +72,7 @@ class MailTask
 						:user_name => ENV['GMAIL_USER'],
 						:password => ENV['GMAIL_PSWD'],
 						:authentication => 'plain',
+						:openssl_verify_mode => OpenSSL::SSL::VERIFY_NONE,
 						:enable_starttls_auto => true
 					}]
 				mail.delivery_method *smtp_settings
