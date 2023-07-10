@@ -80,7 +80,7 @@ class MailTask
 				raise "No known APD_MAIL_MODE set in ENV"
 			end
 			mail.deliver!
-		rescue Errno::ECONNREFUSED => e
+		rescue Errno::ECONNREFUSED, Net::ReadTimeout => e
 			if retry_ct < 1
 				puts "Try sending email again"
 				retry_ct += 1
