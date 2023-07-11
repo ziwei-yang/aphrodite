@@ -1,6 +1,6 @@
-gem 'rest-client'
+gem 'rest-client', '~> 2.1.0'
 gem 'ruby-mysql'
-gem 'redis'
+gem 'redis', '~> 4.7.1' # blpop(list, timeout) does not work when >= 5.0
 gem 'nokogiri'
 gem 'logger'
 gem 'colorize'
