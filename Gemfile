@@ -8,7 +8,7 @@ gem 'execjs'
 gem 'ruby-progressbar'
 gem 'mail'
 gem 'mailgun-ruby'
-gem 'redlock'
+gem 'redlock', '~> 1.3.2'
 # gem 'rmagick'
 
 # For twitter and connection pool
