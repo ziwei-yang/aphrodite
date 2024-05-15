@@ -119,7 +119,7 @@ class CandleBars
     end
   end
 	def initialize(time_unit_m, max_candles, &stat_lambda) # Time unit in minute
-    @time_unit_ms = time_unit_m * 60_000
+    @time_unit_ms = (time_unit_m * 60_000).to_i
     @history = [] # From latest to oldest, does NOT include the current candle.
     @max_candles = max_candles
     @current_candles = 0
@@ -148,6 +148,10 @@ class CandleBars
     end
   end
 
+  def time_unit_m
+    (@time_unit_ms / 60_000.to_f).round(8)
+  end
+
   def to_json(state={}) # Compatiable with JSON lib
     [
       @time_unit_ms,
@@ -174,7 +178,7 @@ class CandleBars
 
 	def append(t, data) # t in ms, discard non-latest data
     return if @latest_tick_ms > t # Could not distinct same trades here.
-    # puts "APPEND #{data}"
+    # puts "APPEND #{data}, time_unit_ms #{@time_unit_ms}"
     @latest_tick_ms = t
 		id = t.to_i / @time_unit_ms
     @latest_bucket_id ||= id
@@ -183,7 +187,7 @@ class CandleBars
     else
       gap = id - @latest_bucket_id
       last_candle = @latest_candle
-      #  puts "INSERT #{gap} candles"
+      # puts "INSERT #{gap} candles"
       gap.times { @history.unshift(last_candle) } # Clone candle for missing timerange, put at first
       @current_candles += gap
       @history = @history[0..(@max_candles-1)] if @current_candles > @max_candles
