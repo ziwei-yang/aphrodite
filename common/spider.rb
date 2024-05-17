@@ -290,7 +290,7 @@ module SpiderUtil
 		driver = opt[:firefox] || opt[:webdriver]
 		driver_new = false
 		if driver.nil?
-			driver = prepare_firefox_webdriver()
+			driver = prepare_firefox_webdriver(opt)
 			driver_new = true
 		end
 		begin
